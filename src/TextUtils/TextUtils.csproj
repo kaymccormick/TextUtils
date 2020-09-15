@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="4.4.1" />
+    <PackageReference Include="CodeExMachina.BTree" Version="0.2.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2020.2.0-eap" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.7.54" />
+  </ItemGroup>
+
+</Project>
