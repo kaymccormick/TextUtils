@@ -32,7 +32,7 @@ namespace TextUtils
                     {
                         double left = 0;
                         double top=0.0;
-                        if (u is TextCaret2 tc)
+                        if (u is TextCaret1 tc)
                         {
                             left = tc.ViewportElementLeft;
                             top = tc.ViewportElementTop;
@@ -134,7 +134,7 @@ namespace TextUtils
         public static readonly DependencyProperty FontStyleProperty = TextElement.FontStyleProperty.AddOwner(typeof(BasicTextVisual));
         public static readonly DependencyProperty FontWeightProperty = TextElement.FontWeightProperty.AddOwner(typeof(BasicTextVisual));
         // public static readonly DependencyProperty VerticalContentAlignmentProperty = TextElement.VerticalContentAlignmentProperty.AddOwner(typeof(BasicTextVisual));
-        private BasicTextSourceClientImpl? _basicTextSourceClientImpl;
+        private BasicTextSourceClient2? _basicTextSourceClientImpl;
         private Dictionary<UIElement, Size> _measures = new Dictionary<UIElement, Size>();
         private bool _inMeasure;
         private BasicTextPanel? _panel;
@@ -201,7 +201,7 @@ namespace TextUtils
         {
             Children = new VisualCollection(this);
             Client = new
-                BasicTextSourceClientImpl(new BasicTextSourceImpl(FontFamily, FontSize));
+                BasicTextSourceClient2(new BasicTextSource2(FontFamily, FontSize));
             BasicTextVisual = new BasicTextVisual(Client);
             Children.Add(BasicTextVisual);
         }
@@ -278,7 +278,7 @@ namespace TextUtils
             
         }
 
-        public BasicTextSourceClientImpl? Client
+        public BasicTextSourceClient2? Client
         {
             get { return _basicTextSourceClientImpl; }
             set { _basicTextSourceClientImpl = value; }

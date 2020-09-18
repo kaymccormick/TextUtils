@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 
@@ -160,13 +162,13 @@ namespace TextUtils
         public int EolLength { get; } = 2;
 
         /// <inheritdoc />
-        public object BtRuns { get; }
+        public object? BtRuns { get; }
 
         /// <inheritdoc />
         public FontRendering? CurrentRendering { get; }
 
         /// <inheritdoc />
-        public ThreadLocal<FontRendering?> ThreadRendering { get; }
+        public ThreadLocal<FontRendering> ThreadRendering { get; }
 
         /// <inheritdoc />
         public bool IsLoaded => true;
@@ -196,7 +198,7 @@ namespace TextUtils
             }
         }
 
-        public char[] TextBuffer { get; set; }
+        public char[]? TextBuffer { get; set; }
         // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public int StartIndex { get; set; }
 
@@ -209,13 +211,13 @@ namespace TextUtils
         /// <inheritdoc />
         public Task<object> TextInputAsync(int? insertionPoint, InputRequest inputRequest)
         {
-            return null;
+            return Task.FromResult<object>(null!);
         }
 
         /// <inheritdoc />
-        public Task<object?> TextChangeAsync(TextChange change)
+        public Task<object?> TextChangeAsync(object? change)
         {
-            return null;
+            return Task.FromResult<object>(null!)!;
         }
 
         /// <inheritdoc />
@@ -235,12 +237,41 @@ namespace TextUtils
             return true;
         }
 
+        public virtual TextParagraphProperties? GetTextParagraphProperties(in int textStorePosition)
+        {
+            return null;
+        }
+
         public void SetTextBuffer(char[] textBuffer, in int startIndex, in int length)
         {
             TextBuffer = textBuffer;
             StartIndex = startIndex;
             Length = length;
         }
+    }
+
+    public class VeryBasicTextRunProperties : TextRunProperties
+    {
+        public VeryBasicTextRunProperties(TextRunProperties baseProps)
+        {
+            BackgroundBrush = baseProps.BackgroundBrush;
+            CultureInfo = baseProps.CultureInfo;
+            FontHintingEmSize = baseProps.FontHintingEmSize;
+            FontRenderingEmSize = baseProps.FontRenderingEmSize;
+            ForegroundBrush = baseProps.ForegroundBrush;
+            TextDecorations = baseProps.TextDecorations;
+            TextEffects = baseProps.TextEffects!;
+            Typeface = baseProps.Typeface;
+        }
+
+        public override Brush BackgroundBrush { get; }
+        public override CultureInfo CultureInfo { get; }
+        public override double FontHintingEmSize { get; }
+        public override double FontRenderingEmSize { get; }
+        public override Brush ForegroundBrush { get; }
+        public override TextDecorationCollection TextDecorations { get; }
+        public override TextEffectCollection TextEffects { get; }
+        public override Typeface Typeface { get; }
     }
 
     public class TextChange

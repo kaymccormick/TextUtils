@@ -5,7 +5,7 @@
         private readonly string? _text;
         public InputRequestKind Kind { get; }
         public int? InsertionPoint { get; }
-        public TextChange? Change { get; }
+        public object? Change { get; }
         public string? Text
         {
             get
@@ -16,7 +16,7 @@
 
         // public int SequenceId { get; set; }
 
-        public InputRequest(InputRequestKind kind, string text, TextChange textChange)
+        public InputRequest(InputRequestKind kind, string text, object? textChange)
         {
             // Timestamp = DateTime.Now;
             Kind = kind;

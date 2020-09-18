@@ -6,7 +6,7 @@ namespace TextUtils
     public interface ILineInfo2Base
     {
         Rect BoundingRect { get; }
-        IEnumerable<CharInfo?> Characters { get; }
+        IEnumerable<CharInfo?>? Characters { get; }
         TextSpan TextSpan { get; }
         int LineNumber { get; }
         int Offset { get; }

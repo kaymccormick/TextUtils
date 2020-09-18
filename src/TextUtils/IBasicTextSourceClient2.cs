@@ -2,7 +2,7 @@
 
 namespace TextUtils
 {
-    public interface IBasicTextSourceClientImpl
+    public interface IBasicTextSourceClient2
     {
         void AddSpan(TextSpan<CharacteristicsImpl> textSpan);
     }

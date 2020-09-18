@@ -1,0 +1,28 @@
+﻿<Window x:Class="BasicTextEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BasicTextEditor"
+        xmlns:textUtils="clr-namespace:TextUtils;assembly=TextUtils"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <textUtils:TextCaret1 x:Name="TextCaret1" CaretWidth="20" LineHeight="20"></textUtils:TextCaret1>
+        <textUtils:BasicTextPanel Grid.Row="1">
+            <textUtils:BasicTextPanel.TextElement>
+                <textUtils:BasicTextEditorElement x:Name="BasicTextEditorElement">
+                    <Paragraph FontSize="20">h
+                        <Run FontSize="30">ell</Run> o.
+                    </Paragraph>
+                    <Paragraph FontSize="20">hello.</Paragraph>
+                    <Paragraph FontSize="20">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Paragraph>
+                </textUtils:BasicTextEditorElement>
+            </textUtils:BasicTextPanel.TextElement>
+        </textUtils:BasicTextPanel>
+    </Grid>
+</Window>

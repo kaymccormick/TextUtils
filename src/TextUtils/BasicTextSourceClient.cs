@@ -1,9 +1,7 @@
-﻿using System.Diagnostics;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
-using Castle.DynamicProxy;
 using JetBrains.Annotations;
 
 namespace TextUtils
@@ -49,28 +47,5 @@ namespace TextUtils
                     new TextInterceptor());
             return t;
         }
-    }
-
-    public class TextInterceptor : IInterceptor
-    {
-        /// <inheritdoc />
-        public void Intercept(IInvocation invocation)
-        {
-            Debug.WriteLine((string?) invocation.Method.Name);
-
-            invocation.Proceed();
-        }
-    }
-
-    public class ProxyHelper
-    {
-        private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
-
-        public static ProxyGenerator ProxyGenerator
-        {
-            get { return _proxyGenerator; }
-        }
-
-        public static bool IsProxyEnabled => false;
     }
 }

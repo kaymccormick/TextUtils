@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.TextFormatting;
 using JetBrains.Annotations;
 using TextLine = System.Windows.Media.TextFormatting.TextLine;
@@ -9,53 +8,51 @@ namespace TextUtils
 {
     public class InputTuple : IInputTuple
     {
-        public void Deconstruct([CanBeNull] out TextLine? item1, out Point item2, [NotNull] out TextSource item3, out int offset, out int? item5, [CanBeNull] [ItemNotNull] out LinkedListNode<CharInfo>? item6, out TextChange? item7, out int lineNo)
+        public void Deconstruct([CanBeNull] out TextLine? textLine, out Point position, [NotNull] out TextSource textSource, out int offset, out int? length, [CanBeNull] out LinkedListNode<CharInfo>? charInfo, out object? textChange, out int lineNo)
         {
-            item1 = Item1;
-            item2 = Item2;
-            item3 = Item3;
+            textLine = TextLine;
+            position = Position;
+            textSource = TextSource;
             offset = Offset;
-            item5 = Item5;
-            item6 = Item6;
-            item7 = Item7;
+            length = Length;
+            charInfo = CharInfo;
+            textChange = TextChange;
             lineNo = LineNo;
         }
 
-        /// <inheritdoc />
         public InputTuple(TextLine? textLine, Point position, TextSource source, int offset, int? length,
-            LinkedListNode<CharInfo>? charInfo, TextChange? change, int lineNo)
+            LinkedListNode<CharInfo>? charInfo, object? change, int lineNo)
         {
-            Item1 = textLine;
-            Item2 =  position;
-            Item3 = source;
+            TextLine = textLine;
+            Position =  position;
+            TextSource = source;
             Offset = offset;
-            Item5 = length;
-            Item6 = charInfo;
-            Item7 = change;
+            Length = length;
+            CharInfo = charInfo;
+            TextChange = change;
             LineNo = lineNo;
-            //Debug.WriteLine("offset is " + offset);
         }
 
         /// <inheritdoc />
-        public TextLine? Item1 { get; set; }
+        public TextLine? TextLine { get; set; }
 
         /// <inheritdoc />
-        public Point Item2 { get; }
+        public Point Position { get; }
 
         /// <inheritdoc />
-        public TextSource Item3 { get; }
+        public TextSource TextSource { get; }
 
         /// <inheritdoc />
         public int Offset { get; }
 
         /// <inheritdoc />
-        public int? Item5 { get; }
+        public int? Length { get; }
 
         /// <inheritdoc />
-        public LinkedListNode<CharInfo>? Item6 { get; }
+        public LinkedListNode<CharInfo>? CharInfo { get; }
 
         /// <inheritdoc />
-        public TextChange? Item7 { get; }
+        public object? TextChange { get; }
 
         public int LineNo { get; }
     }

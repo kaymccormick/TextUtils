@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.TextFormatting;
 
 namespace TextUtils
 {
@@ -13,11 +12,10 @@ namespace TextUtils
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
             "Text", typeof(string), typeof(BasicTextVisual), new PropertyMetadata(default(string?), OnTextChanged));
 
-        private Guid _guid = Guid.NewGuid();
         public string? Text
         {
-            get { return (string?) GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
+            get => (string?) GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
         }
 
         private static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -39,16 +37,9 @@ namespace TextUtils
         {
             Origin = new Point(0, 0);
             ICustomTextSource? textSource = this.Source;
-            var d = @"C:\temp\text\" + this._guid;
-            // if (!Directory.Exists(dir))
-            // {
-                // Directory.CreateDirectory(dir);
-            // }/
-            d += "\\" + _renderCount;
             var drawingContext = this.RenderOpen();
             var width1 = width.GetValueOrDefault(this.ArrangedRect.Width);
-            int lineNo = 0;
-            var d1 = TR.CreateDelegate2(null, (info, line) =>
+            var d1 = TextRenderer1.CreateDelegate2(null!, (info, line) =>
             {
                 line.AddCharacter(info);
             }, null);
@@ -61,22 +52,25 @@ namespace TextUtils
                 // {
                     var lineInfo2Bases = new ILineInfo2Base[10];
                     var drawingGroup = new DrawingGroup();
-                    TR.NewMethod2(null,
+                    TextRenderer1.FormatAndDrawLines(null,
                         0, textSource!, width1, Origin,0,
-                        this.Client.DefaultProperties(),
+                        this.Client!.DefaultProperties(),
                         drawingContext,d1,
                         lineInfo2Bases, 0, 1,
                         drawingGroup, null, BatchAction, null);
             drawingContext.Close();
-            var size = new Size(Drawing.Bounds.Right, Drawing.Bounds.Bottom);
-            Size1 = size;
-            if (VisualParent is UIElement e)
+            if (Drawing != null)
+            {
+                var size = new Size(Drawing.Bounds.Width, Drawing.Bounds.Height);
+                Size1 = size;
+            }
+
+            if (VisualParent is UIElement)
             {
                 //    e.InvalidateMeasure();
             }
 
-            VisualUpdated?.Invoke(this, EventArgs.Empty);;
-            _renderCount++;
+            VisualUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         public event EventHandler? VisualUpdated;
@@ -95,17 +89,12 @@ namespace TextUtils
 
         public ICollection<ILineInfo2Base> Lines { get; set; } = new List<ILineInfo2Base>();
 
+        // ReSharper disable once UnusedMember.Global
         public string OutputFormat { get; } = "jpg";
-
-        /// <inheritdoc />
-        protected override void OnVisualParentChanged(DependencyObject oldParent)
-        {
-            base.OnVisualParentChanged(oldParent);
-        }
 
         public Size Size1
         {
-            get { return _size1; }
+            get => _size1;
             set
             {
                 _size1 = value;
@@ -113,19 +102,13 @@ namespace TextUtils
             }
         }
 
-        public TextFormatter TextFormatter1 { get; } = TextFormatter.Create(TextFormattingMode.Ideal);
-
-        private BasicTextSource? _basicTextSource;
-        private Point _origin;
         private Size _size1;
-        private int _renderCount;
-        private Rect _arrangedRect;
 
         /// <inheritdoc />
         public BasicTextVisual(BasicTextSourceClient? client = null)
         {
             Client = client ??
-                     new BasicTextSourceClient(_basicTextSource = new BasicTextSource(new FontFamily("Arial"), 16.0));
+                     new BasicTextSourceClient2(new BasicTextSource2(new FontFamily("Arial"), 16.0));
             Source = Client.TextSource;
         }
 
@@ -139,17 +122,9 @@ namespace TextUtils
 
         }
 
-        public Rect ArrangedRect
-        {
-            get => _arrangedRect;
-            set { _arrangedRect = value; }
-        }
+        public Rect ArrangedRect { get; set; }
 
-        public Point Origin
-        {
-            get { return _origin; }
-            set { _origin = value; }
-        }
+        public Point Origin { get; set; }
     }
 
 }        

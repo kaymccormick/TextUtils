@@ -13,8 +13,6 @@ namespace TextUtils
         private TextSpan _span;
         public int? Index { get; set; }
 
-
-        /// <inheritdoc />
         public TextSpan Span
         {
             get { return _span; }

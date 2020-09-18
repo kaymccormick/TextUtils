@@ -6,11 +6,27 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="AppGeometryHitTestResult.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.4.1" />
     <PackageReference Include="CodeExMachina.BTree" Version="0.2.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.2.0-eap" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.7.54" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.7.56" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\KimGraphics\src\KimGraphics\KimGraphics\KimGraphics.csproj" />
   </ItemGroup>
 
 </Project>

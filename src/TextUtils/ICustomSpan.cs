@@ -8,7 +8,7 @@
         /// <summary>
         /// 
         /// </summary>
-        TextSpan Span {
+       TextSpan Span {
             get;
         }
 

@@ -4,17 +4,18 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media.TextFormatting;
 using JetBrains.Annotations;
+using Castle.DynamicProxy;
 
 namespace TextUtils
 {
-    public class BasicTextSourceClientImpl : BasicTextSourceClient, IBasicTextSourceClientImpl
+    public class BasicTextSourceClient2 : BasicTextSourceClient, IBasicTextSourceClient2
     {
-        [CanBeNull] private readonly BasicTextSourceImpl? _textSource;
+        [CanBeNull] private readonly BasicTextSource2 _textSource;
 
         /// <inheritdoc />
-        public BasicTextSourceClientImpl([CanBeNull] BasicTextSourceImpl? textSource) : base(textSource)
+        public BasicTextSourceClient2([NotNull] BasicTextSource2? textSource) : base(textSource)
         {
-            _textSource = textSource;
+            _textSource = textSource ?? throw new ArgumentNullException(nameof(textSource));
         }
 
         public void AddSpan(TextSpan<CharacteristicsImpl> textSpan)
@@ -28,63 +29,59 @@ namespace TextUtils
             _textSource.SetTextBuffer(textBuffer, startIndex, length);
         }
 
-        public void Arrange(Rect rect)
-        {
-            
-        }
-
+        /* Insert text into buffer */
         public void Insert(in int cursorPosition, string text)
         {
             var i = cursorPosition;
-            var sp = Enumerable.FirstOrDefault<TextSpan<CharacteristicsImpl>>(_textSource.Spans, z => z.Value.StartIndex + z.Value.Length > i); switch (sp.Value.TextElement)
+            var sp = _textSource.Spans.FirstOrDefault(z => z.Value.StartIndex + z.Value.Length > i); switch (sp?.Value.TextElement)
             {
-                case BlockUIContainer blockUiContainer:
+                case BlockUIContainer _:
                     break;
-                case List list:
+                case List _:
                     break;
-                case Paragraph paragraph:
+                case Paragraph _:
 
                     break;
-                case Section section:
+                case Section _:
                     break;
-                case Table table:
+                case Table _:
                     break;
-                case Block block:
+                case Block _:
                     break;
-                case Figure figure:
+                case Figure _:
                     break;
-                case Floater floater:
+                case Floater _:
                     break;
-                case AnchoredBlock anchoredBlock:
+                case AnchoredBlock _:
                     break;
-                case Bold bold:
+                case Bold _:
                     break;
-                case Hyperlink hyperlink:
+                case Hyperlink _:
                     break;
-                case InlineUIContainer inlineUiContainer:
+                case InlineUIContainer _:
                     break;
-                case Italic italic:
+                case Italic _:
                     break;
-                case LineBreak lineBreak:
+                case LineBreak _:
                     break;
                 case Run run:
                     var i1 = cursorPosition - sp.Value.StartIndex;
                     run.Text = run.Text.Substring(0, i1) + text + run.Text.Substring(i1);
 
                     break;
-                case Underline underline:
+                case Underline _:
                     break;
-                case Span span:
+                case Span _:
                     break;
-                case Inline inline:
+                case Inline _:
                     break;
-                case ListItem listItem:
+                case ListItem _:
                     break;
-                case TableCell tableCell:
+                case TableCell _:
                     break;
-                case TableRow tableRow:
+                case TableRow _:
                     break;
-                case TableRowGroup tableRowGroup:
+                case TableRowGroup _:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

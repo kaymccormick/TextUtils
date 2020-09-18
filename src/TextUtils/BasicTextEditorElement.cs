@@ -9,7 +9,7 @@ using System.Windows.Media.TextFormatting;
 
 namespace TextUtils
 {
-    public class BasicTextEditorElement : BasicTextElement
+    public class BasicTextEditorElement : BasicTextElement, IDisposable
     {
         private DrawingVisual? _drawingVisual;
         private AnimationTimeline _blink;
@@ -22,10 +22,16 @@ namespace TextUtils
         protected override void OnPreviewTextInput(TextCompositionEventArgs e)
         {
             base.OnPreviewTextInput(e);
+            if (Client == null)
+            {
+                return;
+            }
+
             Client.Insert(CursorPosition, e.Text);
+
             CursorPosition++;
             Update();
-            BasicTextVisual.UpdateVisual(AvailableSize.Width);
+            BasicTextVisual?.UpdateVisual(AvailableSize.Width);
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
@@ -47,54 +53,52 @@ namespace TextUtils
         protected override void OnPreviewMouseMove(MouseEventArgs e)
         {
             base.OnPreviewMouseMove(e);
-            var dc = _drawingVisual.RenderOpen();
-
-            var position = e.GetPosition(this);
-            double d = position.X;
-            foreach (var line in BasicTextVisual.Lines)
+            if (_drawingVisual != null)
             {
-                Debug.WriteLine($"{line.LineNumber} {line.BoundingRect} - {position}");
-            }
-            foreach (var line in BasicTextVisual.Lines){
-                if (line.BoundingRect.Contains(position))
-                {
-                    Debug.WriteLine("in " + line.LineNumber);
-                    if (line is LineInfo2BaseImpl i)
-                    {
-                        // for (int i2 = 0; i2 < 200; i2 += 5)
-                        // {
-                        // var hitFromDistance = i.TextLine.GetCharacterHitFromDistance(i2);
-                        // Debug.WriteLine(hitFromDistance.FirstCharacterIndex);
-                        // }
-                        var textLineStart = d;//- i.TextLine.Start;
-                        Debug.WriteLine(textLineStart);
-                        var h = i.TextLine.GetNextCaretCharacterHit(new CharacterHit(line.Offset, 0));
-                        h = i.TextLine.GetPreviousCaretCharacterHit(h);
-                        var char0 = line.Characters.Skip(h.FirstCharacterIndex - line.Offset).FirstOrDefault();
-                        if (char0 != null)
-                        {
-                            var r = char0.BoundingRect;
-                            dc.DrawRectangle(null, new Pen(Brushes.Green, 2), r);
-                        }
-                        var characterHitFromDistance = i.TextLine.GetCharacterHitFromDistance(textLineStart);
-                        var dd = i.TextLine.GetDistanceFromCharacterHit(characterHitFromDistance);
-                        Debug.WriteLine((object?) dd);
-                        Debug.WriteLine((object?) characterHitFromDistance.TrailingLength);
-                        var firstCharacterIndex = characterHitFromDistance.FirstCharacterIndex;
-                        Debug.WriteLine((object?) firstCharacterIndex);
-                        var char1 = line.Characters.Skip(firstCharacterIndex - line.Offset).FirstOrDefault();
-                        if (char1 != null)
-                        {
-                            var r = char1.BoundingRect;
-                            dc.DrawRectangle(null, new Pen(Brushes.Green, 2),r );
-                            Debug.WriteLine(char1.Character);
-                        }
+                var dc = _drawingVisual.RenderOpen();
 
+                var position = e.GetPosition(this);
+                var d = position.X;
+                foreach (var line in BasicTextVisual.Lines)
+                {
+                    Debug.WriteLine($"{line.LineNumber} {line.BoundingRect} - {position}");
+                }
+                foreach (var line in BasicTextVisual.Lines)
+                {
+                    if (!line.BoundingRect.Contains(position)) continue;
+                    Debug.WriteLine("in " + line.LineNumber);
+                    if (!(line is LineInfo2BaseImpl i)) continue;
+                    // for (int i2 = 0; i2 < 200; i2 += 5)
+                    // {
+                    // var hitFromDistance = i.TextLine.GetCharacterHitFromDistance(i2);
+                    // Debug.WriteLine(hitFromDistance.FirstCharacterIndex);
+                    // }
+                    var textLineStart = d;//- i.TextLine.Start;
+                    Debug.WriteLine(textLineStart);
+                    var h = i.TextLine.GetNextCaretCharacterHit(new CharacterHit(line.Offset, 0));
+                    h = i.TextLine.GetPreviousCaretCharacterHit(h);
+                    var char0 = line.Characters.Skip(h.FirstCharacterIndex - line.Offset).FirstOrDefault();
+                    if (char0 != null)
+                    {
+                        var r = char0.BoundingRect;
+                        dc.DrawRectangle(null, new Pen(Brushes.Green, 2), r);
+                    }
+                    var characterHitFromDistance = i.TextLine.GetCharacterHitFromDistance(textLineStart);
+                    var dd = i.TextLine.GetDistanceFromCharacterHit(characterHitFromDistance);
+                    Debug.WriteLine((object?) dd);
+                    Debug.WriteLine((object?) characterHitFromDistance.TrailingLength);
+                    var firstCharacterIndex = characterHitFromDistance.FirstCharacterIndex;
+                    Debug.WriteLine((object?) firstCharacterIndex);
+                    var char1 = line.Characters.Skip(firstCharacterIndex - line.Offset).FirstOrDefault();
+                    if (char1 != null)
+                    {
+                        var r = char1.BoundingRect;
+                        dc.DrawRectangle(null, new Pen(Brushes.Green, 2),r );
+                        Debug.WriteLine(char1.Character);
                     }
                 }
+                dc.Close();
             }
-            dc.Close();
-
         }
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
@@ -105,7 +109,7 @@ namespace TextUtils
 
         public BasicTextEditorElement()
         {
-            TextCaret = new TextCaret1(){LineHeight = 100.0,CaretWidth = 4};
+            TextCaret = new TextCaret1(){LineHeight = 100.0,CaretWidth = 4,Name1="BasicTextEditorElement"};
             Children.Add(TextCaret);
             _drawingVisual = new DrawingVisual();
             Children.Insert(0,_drawingVisual);
@@ -179,6 +183,11 @@ namespace TextUtils
             // var charInfo = BasicTextVisual.Lines.First().Characters.First();
             // var boundingRect = charInfo.BoundingRect;
             // TextCaret.SetCaretPosition(boundingRect.X, boundingRect.Y);
+        }
+
+        public void Dispose()
+        {
+            TextCaret.Dispose();
         }
     }
 }

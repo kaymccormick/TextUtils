@@ -2,19 +2,20 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.TextFormatting;
 using CodeExMachina;
+using KimGraphics;
 
 namespace TextUtils
 {
-    internal static class TR
+    public static class TextRenderer1
     {
-        public static Func<InputTuple, ILineInfo2Base?, TextChange?> CreateDelegate2(BTree<RectInfo> bTree,
+        public static Func<InputTuple, ILineInfo2Base?, object?> CreateDelegate2(BTree<RectInfo> bTree,
             Action<CharInfo, ILineInfo2Base>? takeChar, BTree<TextRunInfo>? btree1)
         {
-            TextChange? Delegate1(InputTuple tuple, ILineInfo2Base? line)
+            object? Delegate1(InputTuple tuple, ILineInfo2Base? line)
             {
                 var (textLine, position, _, offset, _, _, change, lineNo1) = tuple;
                 // if (offset == null)
@@ -31,7 +32,7 @@ namespace TextUtils
 
         public static void HandleLine2(TextLine? myTextLine,
             Point linePosition, int lineNo, int textStorePosition,
-            TextChange? change,
+            object? change,
             ILineInfo2Base? curLineInfo = null, BTree<TextRunInfo>? btRuns = null, Action<CharInfo, ILineInfo2Base>? takeChar=null)
         {
             var curPos = linePosition;
@@ -50,9 +51,8 @@ namespace TextUtils
             {
                 // var moveNext2 = enum2.MoveNext();
                 var lineCharIndex = 0;
-                var xOrigin = linePosition.X+ myTextLine.Start;
+                var xOrigin = linePosition.X+ myTextLine!.Start;
                 if (indexedGlyphRuns == null) return;
-                TextRunInfo? prevTri = null;
                 var lineRun = 0;
                 foreach (var glyphRunC in indexedGlyphRuns)
                 {
@@ -73,7 +73,7 @@ namespace TextUtils
                             glCharacter, glAdvanceWidth,
                             glCaretStop, xOrigin, linePosition.Y, gl.GlyphTypeface.Height * gl.FontRenderingEmSize, gl.ComputeAlignmentBox(),
                             gl.BaselineOrigin, glyphIndex, gl.GlyphTypeface, gl.FontRenderingEmSize, lineRun);
-                        takeChar(ci,curLineInfo);
+                        takeChar!(ci,curLineInfo!);
 
                         lineCharIndex++;
                         xOrigin += glAdvanceWidth;
@@ -119,7 +119,7 @@ namespace TextUtils
 #pragma warning restore 8601
         }
 
-        public static void NewMethod2(TextChange? change,
+        public static void FormatAndDrawLines(TextChange? change,
             int textStorePosition,
             ICustomTextSource source,
             double paragraphWidth0,
@@ -127,7 +127,7 @@ namespace TextUtils
             int lineNo,
             TextParagraphProperties genericTextParagraphProperties,
             DrawingContext myDc,
-            Func<InputTuple, ILineInfo2Base?, TextChange?> delegate1,
+            Func<InputTuple, ILineInfo2Base?, object?> delegate1,
             ILineInfo2Base [] lineInfos,
             int liIndex,
             int batchLines,
@@ -144,12 +144,14 @@ namespace TextUtils
                 // Debug.WriteLine(Thread.CurrentThread.ManagedThreadId + ": "+ textStorePosition);
                 var paragraphWidth = paragraphWidth0 - linePosition.X;
                 if (paragraphWidth < 0) paragraphWidth = 0;
+                var textParagraphProperties = source.GetTextParagraphProperties(textStorePosition);
 
+                var pp = textParagraphProperties ?? genericTextParagraphProperties;
                 InputTuple in1 = new InputTuple(null, linePosition,
                     source.AsTextSource(), textStorePosition, null,
                     null, change, lineNo);
-                var (height, length, widthIncludingTrailingWhitespace, li,prev1) = DoFormatLine2(source.AsTextSource(),
-                    textStorePosition, paragraphWidth, genericTextParagraphProperties, myDc, linePosition, delegate1, in1, CreateLineInfo, lineNo,prev);
+                var (height, length, _, li,prev1) = DoFormatLine2(source.AsTextSource(),
+                    textStorePosition, paragraphWidth, pp, myDc, linePosition, delegate1, in1, CreateLineInfo, lineNo,prev);
                 prev = prev1;
               
                 // var boundingRect = new Rect(linePosition.X, linePosition.Y, widthWithWs, height);
@@ -184,45 +186,49 @@ namespace TextUtils
             // progress?.Report(new UpdateProgress(textStorePosition, lineNo, lineCount));
         }
 
+        private static ILineInfo2Base CreateLineInfo(int arg1, TextSpan arg2, Rect arg3, TextLine arg4) => new LineInfo2BaseImpl(arg1, arg2, arg3, arg4);
+
         private static (double height, int length, double widthIncludingTrailingWhitespace, ILineInfo2Base li, TextLineBreak)
             DoFormatLine2
             (TextSource textSource,
                 int textStorePosition,
                 double paragraphWidth,
-                TextParagraphProperties genericTextParagraphProperties,
+                TextParagraphProperties paragraphProperties,
                 DrawingContext myDc,
-                Point linePosition, Func<InputTuple, ILineInfo2Base?, TextChange?> delegate1, InputTuple t,
+                Point linePosition, Func<InputTuple, ILineInfo2Base?, object?> delegate1, InputTuple t,
                 Func<int, TextSpan, Rect, TextLine, ILineInfo2Base> createFunc, int lineNo, TextLineBreak? textLineBreak)
         {
-            
-            int length;
-            double widthIncludingTrailingWhitespace;
-            double height;
             var textFormatter = Formatter.Value;
 
-            ILineInfo2Base li;
-            var myTextLine = textFormatter.FormatLine
+            var myTextLine = textFormatter!.FormatLine
             (textSource,
                 textStorePosition,
                 paragraphWidth + 10,
-                genericTextParagraphProperties,
+                paragraphProperties,
                 textLineBreak);
-            t.Item1 = myTextLine;
+            t.TextLine = myTextLine;
                
-
-            myTextLine.Draw(myDc, linePosition, InvertAxes.None);
+            DrawServiceClient c = new DrawServiceClient("xx");
+            // myTextLine.Draw(myDc, linePosition, InvertAxes.None);
+            DrawingVisual dv = new DrawingVisual();
+            var dc1 = dv.RenderOpen();
+            DrawingGroup dd = new DrawingGroup();
+            var dc2 = dd.Open();
+            myTextLine.Draw(dc1, linePosition, InvertAxes.None);
+            myTextLine.Draw(dc2, linePosition, InvertAxes.None);
+            dc1.Close();
+            dc2.Close();
+            // c.SendDrawing(dd);
+            myDc.DrawDrawing(dd);
             // Debug.WriteLine($"{Thread.CurrentThread.ManagedThreadId}: {linePosition}");
-            length = myTextLine.Length;
-            height = myTextLine.Height;
+            var length =  myTextLine.Length;
+            var height = dd.Bounds.Height;// myTextLine.Height;
             var arg3 = new Rect(new Point(myTextLine.Start, linePosition.Y), new Size(myTextLine.WidthIncludingTrailingWhitespace, myTextLine.Height));
-            li = createFunc(lineNo, new TextSpan(textStorePosition, myTextLine.Length),arg3,myTextLine);
-            if (delegate1 != null)
-            {
-                delegate1.Invoke(t, li);
-            }
-            widthIncludingTrailingWhitespace = myTextLine.WidthIncludingTrailingWhitespace;
+            ILineInfo2Base li = createFunc(lineNo, new TextSpan(textStorePosition, myTextLine.Length),arg3,myTextLine);
+            delegate1.Invoke(t, li);
+            var width = dd.Bounds.Width;//myTextLine.WidthIncludingTrailingWhitespace;
 
-            return ( height, length, widthIncludingTrailingWhitespace,li,myTextLine.GetTextLineBreak());
+            return ( height, length, width,li,myTextLine.GetTextLineBreak());
 
         }
 

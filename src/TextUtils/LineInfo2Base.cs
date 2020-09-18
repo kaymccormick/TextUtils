@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Media.TextFormatting;
 
 namespace TextUtils
 {
@@ -14,7 +13,7 @@ namespace TextUtils
         }
 
         public Rect BoundingRect { get; }
-        public virtual IEnumerable<CharInfo?> Characters { get; protected set; }
+        public virtual IEnumerable<CharInfo?>? Characters { get; protected set; }
         public TextSpan TextSpan { get; }
         public int LineNumber { get; }
         public int Offset => TextSpan.Start;
@@ -23,17 +22,5 @@ namespace TextUtils
         public int Length => TextSpan.Length;
         public double Width => BoundingRect.Width;
         public abstract void AddCharacter(CharInfo info);
-    }
-
-    public class TextSpan
-    {
-        public int Start { get; set; }
-        public int Length { get; set; }
-        public int End => Start + Length;
-        public TextSpan(int start, int length)
-        {
-            Start = start;
-            Length = length;
-        }
     }
 }
